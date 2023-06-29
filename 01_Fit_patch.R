@@ -39,14 +39,14 @@ set.seed(seed=08022022)#date of the day I added a seed
 #get the modelling options directly from SLURM
 args <- unlist(commandArgs(trailingOnly = TRUE) )
 # args <- c(41,"PR","All","PA","test")
-# args <- c(200,"PR","GLM","AB")
+# args <- c(1,"PR","All","AB","test")
 
 arrayID= as.numeric(args[1])  #will determine which subset of ASVs to model
 GtoM <- args[2]               #will determine which group to model 
 Modeltype <- args[3]          # activates the corresponding parts of the code
 PAAB <- args[4]               # activates the corresponding parts of the code
 test <- ifelse("test"%in%args,TRUE,FALSE) #activate the testing mode
-
+# test=TRUE
 #load Environmental data
 load(paste0("PA/",GtoM,"/data/ENVdata.Rda"))
 
@@ -71,24 +71,29 @@ if(Modeltype=="All"|Modeltype=="GLM"){
     # Eval_GLM(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,Model_list=Modlist,test=TRUE, validation.method="LOO")
     # Eval_GLM_Varsel(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,NbRunEval=100,Model_list=Modlist,test=TRUE)
     
-    }else {
+  }else {
     Modlist<-Fit_GLM(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,test=FALSE)
     Eval_GLM(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,NbRunEval=100,Model_list=Modlist)
   }
   closeAllConnections()
 }
+#only Eval
 if(Modeltype=="All"|Modeltype=="RF"){
   if(test){
-    Modlist<-Fit_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,test=TRUE)
+    load(file=paste0(PAAB,"/",GtoM,"/Outputs/RF/Models/Models_temp", arrayID, ".Rda"))
+    Modlist<-Model_list
+    # Modlist<-Fit_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,test=TRUE)
     Eval_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,NbRunEval=100,Model_list=Modlist,test=TRUE)
     # Eval_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,Model_list=Modlist,test=TRUE, validation.method="random.split-sample")
     # Eval_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,Model_list=Modlist,test=TRUE, validation.method="random.split-sample",DataSplit="LOO")
     # 
-    }else {
-    Modlist<-Fit_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,test=FALSE)
+  }else {
+    load(file=paste0(PAAB,"/",GtoM,"/Outputs/RF/Models/Models_temp", arrayID, ".Rda"))
+    Modlist<-Model_list
+    # Modlist<-Fit_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,test=FALSE)
     Eval_RF(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,NbRunEval=100,Model_list=Modlist)
   }
-    closeAllConnections()
+  closeAllConnections()
 }
 if(Modeltype=="All"|Modeltype=="GBM"){
   if(test){
@@ -101,7 +106,7 @@ if(Modeltype=="All"|Modeltype=="GBM"){
     Modlist<-Fit_GBM(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,test=FALSE)
     Eval_GBM(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,NbRunEval=100,Model_list=Modlist)
   }
-    closeAllConnections()
+  closeAllConnections()
 }
 if(Modeltype=="All"|Modeltype=="GAM"){
   if(test){
@@ -111,7 +116,7 @@ if(Modeltype=="All"|Modeltype=="GAM"){
     Modlist<-Fit_GAM(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,test=FALSE)
     Eval_GAM(PAAB=PAAB,arrayID=arrayID,GtoM=GtoM,ENVdata=ENVdata,NbRunEval=100,Model_list=Modlist)
   }
-    closeAllConnections()
+  closeAllConnections()
 }
 
 
@@ -119,7 +124,12 @@ q("no")
 
 ######################################################################################################
 #Test validation method : Same models fitted, different evaluation methods
-load(paste0("PA/",GtoM,"/Outputs/GLM/Eval_met/Eval_met_temp41.Rda"))
+load(paste0("AB/",GtoM,"/Outputs/RF/Eval_met/Eval_met_temp1.Rda"))
+load(paste0("AB/",GtoM,"/Outputs/RF/Fit_met/Fit_met_temp1.Rda"))
+Fit_met_mat[,8]
+Eval_met_mat[,8]
+all(Mod$predicted==predict(Mod))
+
 apply(Eval_met_mat[,c("TSS","Kappa","Sensitivity","Specificity","AUC")],2,mean,na.rm=TRUE)
 
 #r.split.sampling PRGLMPA full array 41
@@ -135,7 +145,7 @@ apply(Eval_met_mat[,c("TSS","Kappa","Sensitivity","Specificity","AUC")],2,mean,n
 # 0.2939630   0.2656627   0.6450164   0.6489465   0.6503283
 boxplot(Eval_met_mat[,"TSS"])
 
-     
+
 load(paste0("PA/",GtoM,"/Outputs/RF/Eval_met/Eval_met_temp41.Rda"))
 apply(Eval_met_mat[,c("TSS","Kappa","Sensitivity","Specificity","AUC")],2,function(X){mean(X,na.rm=TRUE)})
 #Bootstrap PRRFPA full array 41
