@@ -3,8 +3,8 @@ library(gridExtra)
 library(stringi)
 #Gathering
 PAAB = "PA"
-GtoM="BA"
-algo="GAM"
+GtoM="PR"
+algo="GLM"
 
 #TODEBUG TUESDAY
 # Fitlist<-list()
@@ -78,10 +78,12 @@ print(PAAB)
       files <-list.files(path=paste0(PAAB,"/",GtoM,"/Outputs/",algo,"/VarSel/"), pattern=".Rda") %>% stringr::str_subset(., "temp") #list files ending with ".Rda" and containing "temp"
       files<- gsub("VarSel","",files)
       #reglage PR champi perdu
+      
       if(GtoM=="PR"){
       load(paste0(PAAB,"/",GtoM,"/Outputs/",algo,"/VarSel/VarSel_temp244.Rda")) #load last file to check Number of OTU
         if(as.numeric(gsub("OTU","",names(VarSel$preselection)[length(VarSel$preselection)]))!=length(seqs)){
-          seqs<-c(colnames(OTUdata)[1:3018],"ChampiPerdu",colnames(OTUdata)[3020:3161])
+          message("PB number of seq")
+          seqs<-c(colnames(OTUdata)[1:3018],"ChampiPerdu",colnames(OTUdata)[3019:3160])
           table_to_fill_rankings<-as.data.frame(matrix(0,ncol=length(ENVdata),nrow=length(seqs)))
           table_to_fill_rankings2<-as.data.frame(matrix(NA,ncol=length(ENVdata),nrow=length(seqs)))
           colnames(table_to_fill_rankings2)<-colnames(table_to_fill_rankings)<-colnames(ENVdata)
@@ -228,7 +230,8 @@ for (PAAB in c("PA","AB")){# PAAB="AB"
       if(GtoM=="PR"){
         load(paste0(PAAB,"/",GtoM,"/Outputs/",algo,"/VarSel/VarSel_temp244.Rda")) #load last file to check Number of OTU
         if(as.numeric(gsub("OTU","",names(VarSel$preselection)[length(VarSel$preselection)]))!=length(seqs)){
-          seqs<-c(colnames(OTUdata)[1:3018],"ChampiPerdu",colnames(OTUdata)[3020:3161])
+          message("PB number of seq")
+          seqs<-c(colnames(OTUdata)[1:3018],"ChampiPerdu",colnames(OTUdata)[3019:3160])
           table_to_fill_rankings<-as.data.frame(matrix(0,ncol=length(ENVdata),nrow=length(seqs)))
           table_to_fill_rankings2<-as.data.frame(matrix(NA,ncol=length(ENVdata),nrow=length(seqs)))
           colnames(table_to_fill_rankings2)<-colnames(table_to_fill_rankings)<-colnames(ENVdata)

@@ -187,8 +187,8 @@ load("../../../30_data/ASVtables_taxo/BAtaxo2019_full.Rda")
 load("../../../30_data/ASVtables_taxo/PRtaxo2023_full.Rda")
 load("../../../30_data/ASVtables_taxo/FUtaxo2023_full.Rda")
 
-EUKtaxofull<-euk_silva.tax
-PRtaxofull<-read.csv("../../../30_data/ASVtables_taxo/Tax_table_Protists.csv",sep=",")
+# EUKtaxofull<-euk_silva.tax
+# PRtaxofull<-read.csv("../../../30_data/ASVtables_taxo/Tax_table_Protists.csv",sep=",")
 
 
 
@@ -225,7 +225,7 @@ all(OTUdata_BA_AB_taxo2$Seq==colnames(OTUdata_BA_AB))
 # sum(OTUdata_BA_AB_taxo2$Kingdom=="unclassified_Root",na.rm = TRUE)  7922 ??
 
 #easier datset for future (remove unassigned taxa directly instead of post-modelling):
-OTUdata_BA_AB <- OTUdata_BA_AB[,OTUdata_BA_AB_taxo$Kingdom!="unclassified_Root"]
+OTUdata_BA_AB <- OTUdata_BA_AB[,OTUdata_BA_AB_taxo2$Kingdom!="unclassified_Root"]
 OTUdata_BA_AB_taxo2<-BAtaxo2019[match(colnames(OTUdata_BA_AB),BAtaxo2019[,"Seq"]),]
 
 #Need treshold to remove very high and very low prevalence (algos wont be able to adjust to data)
@@ -527,26 +527,41 @@ hillshade <- crop(readRDS("../../spatial_data/Valpar/ch_topo_alti3d2016_pixel_hi
 
 plot(ENVstack$aspect)
 hillshade<-mask(hillshade,ENVstack$aspect)
+
+rownames( OTUdata_BA_AB)
+edaph_data_BA2<-edaph_data_BA[edaph_data_BA$sampleNameBA%in%rownames(OTUdata_BA_AB),]
+edaph_data_FU2<-edaph_data_FU[edaph_data_FU$sampleNameFU%in%rownames(OTUdata_FU_AB),]
+edaph_data_PR2<-edaph_data_PR[edaph_data_PR$sampleNamePR%in%rownames(OTUdata_PR_AB),]
+
+#BA points that are in FU and in PR
+BA_FU_PR<-edaph_data_BA2[edaph_data_BA2$x%in%edaph_data_FU2$x&edaph_data_BA2$y%in%edaph_data_FU2$y&edaph_data_BA2$x%in%edaph_data_PR2$x&edaph_data_BA2$y%in%edaph_data_PR2$y,c("x","y")]
+#Ba points that are in FU but not in PR
+BA_FU<-edaph_data_BA2[edaph_data_BA2$x%in%edaph_data_FU2$x&edaph_data_BA2$y%in%edaph_data_FU2$y&(!(edaph_data_BA2$x%in%edaph_data_PR2$x))&(!(edaph_data_BA2$y%in%edaph_data_PR2$y)),c("x","y")]
+#BA points that are in Pr but not in FU
+BA_PR<-edaph_data_BA2[edaph_data_BA2$x%in%edaph_data_PR2$x&edaph_data_BA2$y%in%edaph_data_PR2$y&(!(edaph_data_BA2$x%in%edaph_data_FU2$x))&(!(edaph_data_BA2$y%in%edaph_data_FU2$y)),c("x","y")]
+#Ba points that are neither in FU or PR
+BA_only<-edaph_data_BA2[(!(edaph_data_BA2$x%in%edaph_data_PR2$x))&(!(edaph_data_BA2$y%in%edaph_data_PR2$y))&(!(edaph_data_BA2$x%in%edaph_data_FU2$x))&(!(edaph_data_BA2$y%in%edaph_data_FU2$y)),c("x","y")]
+
+library(viridis)
+viridis(4)
 plot(hillshade,col=gray.colors(1000))
+points(BA_FU_PR,pch=21,lwd=1,col="black",bg="#FDE725FF",cex=1.2)
+points(BA_FU,pch=22,lwd=1,col="black",bg="#35B779FF",cex=1.2)
+points(BA_PR,pch=23,col="black",bg="#31688EFF",cex=1.2)
+points(BA_only,pch=24,col="black",bg="#440154FF",cex=1.2)
 
-points(edaph_data_BA[,c("x","y")],pch=16,col="#aec800",cex=1.2)
-points(edaph_data_FU[,c("x","y")],pch=17,col=alpha("#6B4C62",0.8))
-points(edaph_data_PR[,c("x","y")],pch=18,col=alpha("#457EB0",0.7))
-legend(2550000,1130000,c("Bacteria\n & Archaea (16S)","Fungi (ITS)", "Protista (18S)"),pch=c(16,17,18), col=c(alpha("#aec800",0.8),alpha("#6B4C62",0.8),"#457EB0"),bty="n")
+# points(edaph_data_BA[,c("x","y")],pch=16,col="#aec800",cex=1.2)
+# points(edaph_data_FU[,c("x","y")],pch=17,col=alpha("#6B4C62",0.8))
+# points(edaph_data_PR[,c("x","y")],pch=18,col=alpha("#457EB0",0.7))
+legend(2550000,1130000,c("BAFP","BAF", "BAP","BA"),pch=c(21,22,23,24), col=rep("black",4),pt.bg=c("#FDE725FF","#35B779FF","#31688EFF","#440154FF"),bty="n")
 
 
-pdf(file="figures/Datasets_sampling.pdf")
+png(file=paste0("figures/PAAB_selection/Datasets_sampling.png"),res=300,width=1961,height=1500)
 plot(hillshade,col=gray.colors(1000))
+points(BA_FU_PR,pch=21,lwd=1,col="black",bg="#FDE725FF",cex=1.2)
+points(BA_FU,pch=22,lwd=1,col="black",bg="#35B779FF",cex=1.2)
+points(BA_PR,pch=23,col="black",bg="#31688EFF",cex=1.2)
+points(BA_only,pch=24,col="black",bg="#440154FF",cex=1.2)
+legend(2550000,1130000,c("BAFP","BAF", "BAP","BA"),pch=c(21,22,23,24), col=rep("black",4),pt.bg=c("#FDE725FF","#35B779FF","#31688EFF","#440154FF"),bty="n")
 
-points(edaph_data_BA[,c("x","y")],pch=16,col="#aec800",cex=1.2)
-points(edaph_data_FU[,c("x","y")],pch=17,col=alpha("#6B4C62",0.8))
-points(edaph_data_PR[,c("x","y")],pch=18,col=alpha("#457EB0",0.7))
-legend(2540000,1130000,c("Bacteria & \nArchaea (16S)","Fungi (ITS)", "Protista (18S)"),pch=c(16,17,18), col=c(alpha("#aec800",0.8),alpha("#6B4C62",0.8),"#457EB0"),bty="n")
-dev.off()
-png(file=paste0("figures/Datasets_sampling.png"),res=300,width=1961,height=1500)
-plot(hillshade,col=gray.colors(1000))
-points(edaph_data_BA[,c("x","y")],pch=16,col="#aec800",cex=1.2)
-points(edaph_data_FU[,c("x","y")],pch=17,col=alpha("#6B4C62",0.8))
-points(edaph_data_PR[,c("x","y")],pch=18,col=alpha("#457EB0",0.7))
-legend(2540000,1130000,c("Bacteria & \nArchaea (16S)","Fungi (ITS)", "Protista (18S)"),pch=c(16,17,18), col=c(alpha("#aec800",0.8),alpha("#6B4C62",0.8),"#457EB0"),bty="n")
 dev.off()

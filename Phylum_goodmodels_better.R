@@ -112,13 +112,14 @@ for(Mod in c("GBM","GAM","RF","GLM")){#Mod="GLM"
       labels_AR <- paste(unique(molten_good_AR$phylum), " ( n =",c(table(evalmet_AR$Phylum)[-which(names(table(evalmet_AR$Phylum))%in%c("Others","unclassified_Archaea"))],table(evalmet_AR$Phylum)[which(names(table(evalmet_AR$Phylum))%in%c("Others","unclassified_Archaea"))]), ")")
       
       p1_BA<-ggplot(comparison_BA, aes(x=Var1, y=value, fill=Var2)) +
-        geom_bar(stat="identity",show.legend = FALSE) + xlab("") + ylab("")+
+        geom_bar(stat="identity",show.legend = FALSE) + ylab("")+
         scale_fill_manual("Bacteria phylum",values = setcolors$BA)+ theme_bw() +
         scale_x_discrete(labels=c("AllASV_phylum_BA" = "Whole dataset", "goodASV_phylum_OK_BA" = "TSS >TSSnull", "goodASV_phylum_02_BA" = "TSSadj>0.2", "goodASV_phylum_04_BA" = "TSSadj>0.4", "goodASV_phylum_06_BA" = "TSSadj>0.6", "goodASV_phylum_08_BA" = "TSSadj>0.8"))+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-              axis.text.x = element_text(size=5),
-              axis.text.y = element_text(size=5),
-              legend.title = element_blank())
+              axis.text.x = element_text(size=10),
+              axis.text.y = element_text(size=10),
+              legend.title = element_blank(),
+              axis.title.x = element_blank())
       p2_BA<-ggplot(molten_good_BA,aes(x=variable,y=value,fill=phylum,group=phylum))+
         geom_bar(position="dodge",stat="identity")+
         ylim(0,1) + xlab("") + ylab("Proportion of models")+
@@ -128,14 +129,15 @@ for(Mod in c("GBM","GAM","RF","GLM")){#Mod="GLM"
         theme_classic()+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
               axis.title.y = element_text(size=10),
-              axis.text.y = element_text(size=4),
+              axis.text.y = element_text(size=6),
               axis.text.x = element_blank(),
               plot.margin = unit(c(0.5,0,0,0),"cm"),
               legend.title = element_text(size=7,colour = setcolors$dataset[group]),
-              legend.text = element_text(size=5),
+              legend.text = element_text(size=6),
               legend.key.size = unit(0.3,"line"),
               legend.position = c(1,1.1),
-              legend.justification = c("right", "top"))
+              legend.justification = c("right", "top"),
+              legend.background = element_blank())
       # grid.arrange(p1_BA,p2_BA,nrow=1,top=paste0("BA_",Mod,"_",PAAB,"_02"))
       # p3_BA<-ggplot(comparison_05_BA, aes(x=Var1, y=value, fill=Var2)) +
       #   geom_bar(stat="identity",show.legend = FALSE) + xlab("") + ylab("")+
@@ -146,13 +148,14 @@ for(Mod in c("GBM","GAM","RF","GLM")){#Mod="GLM"
       #   scale_fill_manual(values = setcolors$BA)
       # grid.arrange(p3_BA,p4_BA,nrow=1,top=paste0("BA_",Mod,"_",PAAB,"_05"))
       p1_AR<-ggplot(comparison_AR, aes(x=Var1, y=value, fill=Var2)) +
-        geom_bar(stat="identity",show.legend = FALSE) + xlab("") + ylab("")+
+        geom_bar(stat="identity",show.legend = FALSE) + ylab("")+
         scale_fill_manual("Archaea phylum",values = setcolors$AR)+ theme_bw() +
         scale_x_discrete(labels=c("AllASV_phylum_AR" = "Whole dataset", "goodASV_phylum_OK_AR" = "TSS >TSSnull", "goodASV_phylum_02_AR" = "TSSadj>0.2", "goodASV_phylum_04_AR" = "TSSadj>0.4", "goodASV_phylum_06_AR" = "TSSadj>0.6", "goodASV_phylum_08_AR" = "TSSadj>0.8"))+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-              axis.text.x = element_text(size=5),
-              axis.text.y = element_text(size=5),
-              legend.title = element_blank())
+              axis.text.x = element_text(size=10),
+              axis.text.y = element_text(size=10),
+              legend.title = element_blank(),
+              axis.title.x = element_blank())
       
       p2_AR<-ggplot(molten_good_AR,aes(x=variable,y=value,fill=phylum,group=phylum))+
         geom_bar(position="dodge",stat="identity")+
@@ -163,11 +166,11 @@ for(Mod in c("GBM","GAM","RF","GLM")){#Mod="GLM"
         theme_classic()+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
               axis.title.y = element_text(size=10),
-              axis.text.y = element_text(size=4),
+              axis.text.y = element_text(size=6),
               axis.text.x = element_blank(),
               plot.margin = unit(c(0.5,0,0,0),"cm"),
               legend.title = element_text(size=7,colour = setcolors$dataset["AR"]),
-              legend.text = element_text(size=5),
+              legend.text = element_text(size=6),
               legend.key.size = unit(0.3,"line"),
               legend.position = c(1,1.1),
               legend.justification = c("right", "top"))
@@ -247,13 +250,14 @@ for(Mod in c("GBM","GAM","RF","GLM")){#Mod="GLM"
       labels <- paste(unique(molten_good$phylum), " (n =",table(evalmet$Phylum), ")",sep="")
       # sum(!(is.na(evalmet$TSS)))
       assign(paste0("p1_", group), ggplot(comparison, aes(x=Var1, y=value, fill=Var2)) +
-               geom_bar(stat="identity",show.legend = FALSE) + xlab("") + ylab("")+
+               geom_bar(stat="identity",show.legend = FALSE) + ylab("")+
                scale_fill_manual(paste0(ifelse(group=="PR","Protist phylum","Fungi phylum")),values = setcolors[[group]])+ theme_bw() +
                scale_x_discrete(labels=c("AllASV_phylum" = "Whole dataset", "goodASV_phylum_OK" = "TSS > TSSnull", "goodASV_phylum_02" = "TSSadj>0.2", "goodASV_phylum_04" = "TSSadj>0.4", "goodASV_phylum_06" = "TSSadj>0.6", "goodASV_phylum_08" = "TSSadj>0.8"))+ 
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-                     axis.text.x = element_text(size=5),
-                     axis.text.y = element_text(size=5),
-                     legend.title = element_blank())
+                     axis.text.x = element_text(size=10),
+                     axis.text.y = element_text(size=10),
+                     legend.title = element_blank(),
+                     axis.title.x = element_blank())
              )#p1_FU
       if(group=="PR"){plotmarg<-unit(c(0,0.5,0,0),"cm")}else{plotmarg<-unit(c(0,0,0,0.5),"cm")}
       assign(paste0("p2_", group), ggplot(molten_good,aes(x=variable,y=value,fill=phylum,group=phylum))+
@@ -265,11 +269,11 @@ for(Mod in c("GBM","GAM","RF","GLM")){#Mod="GLM"
                theme_classic()+ 
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
                      axis.title.y = element_text(size=10),
-                     axis.text.y = element_text(size=4),
+                     axis.text.y = element_text(size=6),
                      axis.text.x = element_text(size=10),
                      plot.margin = unit(c(0,0,0,0),"cm"),
                      legend.title = element_text(size=7,colour = setcolors$dataset[group]),
-                     legend.text = element_text(size=5),
+                     legend.text = element_text(size=6),
                      legend.key.size = unit(0.3,"line"),
                      legend.position = c(.95,1),
                      legend.justification = c("right", "top"))
@@ -300,9 +304,9 @@ PAAB="AB"
   # for (PAAB in c("PA","AB")){
 for(Mod in c("RF","GLM","GBM","GAM")){#Mod="GLM"
     for (group in c("PR","FU","BA")){#group="PR"
-    # group="PR"
-    
-    # Mod="GBM"
+# group="PR"
+# 
+# Mod="GBM"
 
     print(paste0(group,PAAB,Mod))
     load(paste0(PAAB,"/",group,"/data/",Mod,"/Eval_Met.Rda"))
@@ -393,13 +397,14 @@ for(Mod in c("RF","GLM","GBM","GAM")){#Mod="GLM"
       
       
       p1_BA<-ggplot(comparison_BA, aes(x=Var1, y=value, fill=Var2)) +
-        geom_bar(stat="identity",show.legend = FALSE) + xlab("") + ylab("")+
+        geom_bar(stat="identity",show.legend = FALSE) + ylab("")+
         scale_fill_manual("Bacteria phylum",values = setcolors$BA)+ theme_bw() +
         scale_x_discrete(labels=c("AllASV_phylum_BA" = "Total", "goodASV_phylum_02_BA" = expression(rho~">0.2"), "goodASV_phylum_04_BA" = expression(rho~">0.4"), "goodASV_phylum_06_BA" = expression(rho~">0.6"), "goodASV_phylum_08_BA" = expression(rho~">0.8")))+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-              axis.text.x = element_text(size=7.5),
-              axis.text.y = element_text(size=7.5),
-              legend.title = element_blank())
+              axis.text.x = element_text(size=10),
+              axis.text.y = element_text(size=10),
+              legend.title = element_blank(),
+              axis.title.x = element_blank())
       p2_BA<-ggplot(molten_good_BA,aes(x=variable,y=value,fill=phylum,group=phylum))+
         geom_bar(position="dodge",stat="identity")+
         ylim(0,1) + xlab("") + ylab("Proportion of models")+
@@ -409,23 +414,25 @@ for(Mod in c("RF","GLM","GBM","GAM")){#Mod="GLM"
         theme_classic()+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
               axis.title.y = element_text(size=10),
-              axis.text.y = element_text(size=4),
+              axis.text.y = element_text(size=6),
               axis.text.x = element_blank(),
               plot.margin = unit(c(0.5,0,0,0),"cm"),
               legend.title = element_text(size=7,colour = setcolors$dataset[group]),
               legend.text = element_text(size=5),
               legend.key.size = unit(0.3,"line"),
               legend.position = c(1,1.1),
-              legend.justification = c("right", "top"))
+              legend.justification = c("right", "top"),
+              legend.background = element_blank())
       
       p1_AR<-ggplot(comparison_AR, aes(x=Var1, y=value, fill=Var2)) +
-        geom_bar(stat="identity",show.legend = FALSE) + xlab("") + ylab("")+
+        geom_bar(stat="identity",show.legend = FALSE) + ylab("")+
         scale_fill_manual("Archaea phylum",values = setcolors$AR)+ theme_bw() +
         scale_x_discrete(labels=c("AllASV_phylum_AR" = "Total", "goodASV_phylum_02_AR" = expression(rho~">0.2"), "goodASV_phylum_04_AR" = expression(rho~">0.4"), "goodASV_phylum_06_AR" = expression(rho~">0.6"), "goodASV_phylum_08_AR" = expression(rho~">0.8")))+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-              axis.text.x = element_text(size=7.5),
-              axis.text.y = element_text(size=7.5),
-              legend.title = element_blank())
+              axis.text.x = element_text(size=10),
+              axis.text.y = element_text(size=10),
+              legend.title = element_blank(),
+              axis.title.x = element_blank())
       
       p2_AR<-ggplot(molten_good_AR,aes(x=variable,y=value,fill=phylum,group=phylum))+
         geom_bar(position="dodge",stat="identity")+
@@ -436,14 +443,15 @@ for(Mod in c("RF","GLM","GBM","GAM")){#Mod="GLM"
         theme_classic()+ 
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
               axis.title.y = element_text(size=10),
-              axis.text.y = element_text(size=4),
+              axis.text.y = element_text(size=6),
               axis.text.x = element_blank(),
               plot.margin = unit(c(0.5,0,0,0),"cm"),
               legend.title = element_text(size=7,colour = setcolors$dataset["AR"]),
               legend.text = element_text(size=5),
               legend.key.size = unit(0.3,"line"),
               legend.position = c(1,1.1),
-              legend.justification = c("right", "top"))
+              legend.justification = c("right", "top"),
+              legend.background = element_blank())
 
     } else{
       
@@ -519,13 +527,14 @@ for(Mod in c("RF","GLM","GBM","GAM")){#Mod="GLM"
       
       if(group=="PR"){plotmarg<-unit(c(0,0.5,0,0),"cm")}else{plotmarg<-unit(c(0,0,0,0.5),"cm")}
       assign(paste0("p1_", group), ggplot(comparison, aes(x=Var1, y=value, fill=Var2)) +
-               geom_bar(stat="identity",show.legend = FALSE) + xlab("") + ylab("")+
+               geom_bar(stat="identity",show.legend = FALSE) + ylab("")+
                scale_fill_manual(paste0(ifelse(group=="PR","Protist phylum","Fungi phylum")),values = setcolors[[group]])+ theme_bw() +
                scale_x_discrete(labels=c("AllASV_phylum" = "Whole dataset", "goodASV_phylum_02" = expression(rho~">0.2"), "goodASV_phylum_04" = expression(rho~">0.4"), "goodASV_phylum_06" = expression(rho~">0.6"), "goodASV_phylum_08" = expression(rho~">0.8")))+ 
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-                     axis.text.x = element_text(size=7.5),
-                     axis.text.y = element_text(size=7.5),
-                     legend.title = element_blank())
+                     axis.text.x = element_text(size=10),
+                     axis.text.y = element_text(size=10),
+                     legend.title = element_blank(),
+                     axis.title.x = element_blank())
       )
       assign(paste0("p2_", group), ggplot(molten_good,aes(x=variable,y=value,fill=phylum,group=phylum))+
                geom_bar(position="dodge",stat="identity")+
@@ -536,14 +545,15 @@ for(Mod in c("RF","GLM","GBM","GAM")){#Mod="GLM"
                theme_classic()+ 
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
                      axis.title.y = element_text(size=10),
-                     axis.text.y = element_text(size=4),
+                     axis.text.y = element_text(size=6),
                      axis.text.x = element_text(size=10),
                      plot.margin = unit(c(0,0,0,0),"cm"),
                      legend.title = element_text(size=7,colour = setcolors$dataset[group]),
-                     legend.text = element_text(size=5),
+                     legend.text = element_text(size=6),
                      legend.key.size = unit(0.3,"line"),
                      legend.position = c(.95,1),
-                     legend.justification = c("right", "top"))
+                     legend.justification = c("right", "top"),
+                     legend.background = element_blank())
       )
     }#p2_AR
 
@@ -561,4 +571,5 @@ for(Mod in c("RF","GLM","GBM","GAM")){#Mod="GLM"
   grid.arrange(p1_BA,p1_AR,p1_FU,p1_PR,nrow=4)
   dev.off()
 }
+
 

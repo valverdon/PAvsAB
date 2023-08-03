@@ -9,7 +9,7 @@ library(paletteer)
 
 PAAB="PA"
 # PAAB="AB"
-GtoM="FU"
+GtoM="BA"
 algo="GLM"
 # load(paste0(PAAB,"/",GtoM,"/data/ENVdata.Rda"))
 #colnames(ENVdata)
@@ -17,15 +17,16 @@ algo="GLM"
 
 climatic<-c("bio1_t", "bio10_twa", "bio11_tco", "bio12_p" ,"bio13_pwe","bio14_pdr","bio15_ps" ,"bio16_pwe","bio17_pdr","bio18_pwa","bio19_pco",
             "bio2_tdr" ,"bio3_tiso","bio4_ts" , "bio5_tmax","bio6_tmin","bio7_tar", "bio8_twet","bio9_tdry","GDD0" , "ETP" ,  "cumday_no","sRadY","noise","MoistVar" )
-edaphic<-c("pH","pH.1","ndvi","bulkSoilW","soilTemp","EC_1_5",    "TotalP",    "Nitrogen",  "Carbon",    "Hydrogen",  "Phyllosil", "Quartz",    "Feldspath","Plagiocla","MassiveLi",
+edaphic<-c("pH","pH.1","bulkSoilW","soilTemp","EC_1_5",    "TotalP",    "Nitrogen",  "Carbon",    "Hydrogen",  "Phyllosil", "Quartz",    "Feldspath","Plagiocla","MassiveLi",
            "Calcite",   "Indoses",   "SiO2",      "TiO2",     "Al2O3",     "Fe2O3" ,"MnO"  , "MgO",   "CaO",   "Na2O","Marlyshal","MarlShale",
            "K2O" ,  "P2O5"  , "OM"  ,  "Cr2O3",  "NiO",   "d15N" ,  "d13C","Silt_clay", "clay"  , "ThinSilt", "ThickSilt", "ThinSand", "ThickSand","Soil_aera","Soil_humu","Soil_mois","Soil_mois.1","Soil_nutr" )
 topographic<-c("aspect","slope","Elevation","Altitude")
 landcover<-c("forest_ag", "hydro_agg", "lowVeg_ag", "anthropos",   "deciduous")
-col_table<-data.frame(categ=c("climatic","edaphic","landcover","ndmi","topographic"),color=c("#F5E6A4",'#F5BBAE',"#8CF5CE",'#457EB0','gray69'))
+remote.sensing<-c("ndvi","ndmi")
+col_table<-data.frame(categ=c("climatic","edaphic","landcover","remote.sensing","topographic"),color=c("#F5E6A4",'#F5BBAE',"#8CF5CE",'#457EB0','gray69'))
 
 Prop_models_one_cov<-matrix(NA,ncol=5,nrow=2*4*4)
-colnames(Prop_models_one_cov)<-c("climatic","edaphic","landcover","ndmi","topographic")
+colnames(Prop_models_one_cov)<-c("climatic","edaphic","landcover","remote.sensing","topographic")
 rownames(Prop_models_one_cov)<-c("PA_GLM_PR","PA_GLM_FU","PA_GLM_BA","PA_GLM_AR","PA_GAM_PR","PA_GAM_FU","PA_GAM_BA","PA_GAM_AR","PA_GBM_PR","PA_GBM_FU","PA_GBM_BA","PA_GBM_AR","PA_RF_PR","PA_RF_FU","PA_RF_BA","PA_RF_AR",
                                  "AB_GLM_PR","AB_GLM_FU","AB_GLM_BA","AB_GLM_AR","AB_GAM_PR","AB_GAM_FU","AB_GAM_BA","AB_GAM_AR","AB_GBM_PR","AB_GBM_FU","AB_GBM_BA","AB_GBM_AR","AB_RF_PR","AB_RF_FU","AB_RF_BA","AB_RF_AR")
 
@@ -151,11 +152,14 @@ for (PAAB in c("PA","AB")){
         #per variable, proportion of models in which they where preselected
         # barplot(allpresel2,main=paste0(PAAB,"_",GtoM,"_",algo,"_Preselection"),las = 2)
         #ggplot
-        allpresel3<-data.frame(value=allpresel2,variable=factor(names(allpresel2),levels=names(allpresel2)),categ=ifelse(names(allpresel2)%in%climatic,"climatic",
-                                                                                                                         ifelse(names(allpresel2)%in%edaphic,"edaphic",
-                                                                                                                                ifelse(names(allpresel2)%in%topographic,"topographic",
-                                                                            ifelse(names(allpresel2)%in%landcover,"landcover",names(allpresel2))))))
-        allpresel3$categ<-factor(allpresel3$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+        allpresel3<-data.frame(value=allpresel2,
+                               variable=factor(names(allpresel2),levels=names(allpresel2)),
+                               categ=ifelse(names(allpresel2)%in%climatic,"climatic",
+                                            ifelse(names(allpresel2)%in%edaphic,"edaphic",
+                                                   ifelse(names(allpresel2)%in%topographic,"topographic",
+                                                          ifelse(names(allpresel2)%in%landcover,"landcover",
+                                                                 ifelse(names(allpresel2)%in%remote.sensing,"remote.sensing",names(allpresel2)))))))
+        allpresel3$categ<-factor(allpresel3$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         categinplot_allpresel3<-unique(allpresel3$categ)   
         allpresel3_10<-allpresel3[1:10,]
         categinplot_allpresel3_10<-unique(allpresel3[1:10,]$categ)   
@@ -189,11 +193,14 @@ for (PAAB in c("PA","AB")){
         # barplot(allsel2,main=paste0(PAAB,"_",GtoM,"_",algo,"_Selection"),las = 2)
         allsel2<-allsel2[order(allsel2,decreasing=TRUE)]
         #add categories
-        allsel3<-data.frame(value=allsel2,variable=factor(names(allsel2),levels=names(allsel2)),categ=ifelse(names(allsel2)%in%climatic,"climatic",
-                                                                                                             ifelse(names(allsel2)%in%edaphic,"edaphic",
-                                                                                                                    ifelse(names(allsel2)%in%topographic,"topographic",
-                                                                                                                           ifelse(names(allsel2)%in%landcover,"landcover",names(allsel2))))))
-        allsel3$categ<-factor(allsel3$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+        allsel3<-data.frame(value=allsel2,
+                               variable=factor(names(allsel2),levels=names(allsel2)),
+                               categ=ifelse(names(allsel2)%in%climatic,"climatic",
+                                            ifelse(names(allsel2)%in%edaphic,"edaphic",
+                                                   ifelse(names(allsel2)%in%topographic,"topographic",
+                                                          ifelse(names(allsel2)%in%landcover,"landcover",
+                                                                 ifelse(names(allsel2)%in%remote.sensing,"remote.sensing",names(allsel2)))))))
+        allsel3$categ<-factor(allsel3$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
                 # allsel3$variable<-as.character(allsel3$variable)
         # if(allsel3$variable[allsel3$variable=="Altitude"|allsel3$variable=="Elevation"]!=colnames(ENVdata)[colnames(ENVdata)=="Elevation"|colnames(ENVdata)=="Altitude"]){
         #   allsel3$variable[which(allsel3$variable=="Altitude"|allsel3$variable=="Elevation")]<-colnames(ENVdata)[colnames(ENVdata)=="Elevation"|colnames(ENVdata)=="Altitude"]
@@ -250,7 +257,7 @@ for (PAAB in c("PA","AB")){
        #    data_reordered$categ<-unlist(lapply(as.vector(data_reordered$L1),function(X){ifelse(X%in%climatic,"climatic",
        #                                                                                        ifelse(X%in%edaphic,"edaphic",
        #                                                                                               ifelse(X%in%topographic,"topographic",
-       #                                                                                                      ifelse(X%in%remote_sensing,"remote_sensing",
+       #                                                                                                      ifelse(X%in%remote.sensing,"remote.sensing",
        #                                                                                                             ifelse(X%in%landcover,"landcover",X)))))}))
        # 
        # categinplot_pRank<-unique(data_reordered$categ)
@@ -296,7 +303,8 @@ for (PAAB in c("PA","AB")){
         data_reordered4$categ<-unlist(lapply(as.vector(data_reordered4$L1),function(X){ifelse(X%in%climatic,"climatic",
                                                                                             ifelse(X%in%edaphic,"edaphic",
                                                                                                    ifelse(X%in%topographic,"topographic",
-                                                                                                          ifelse(X%in%landcover,"landcover",X))))}))
+                                                                                                          ifelse(X%in%landcover,"landcover",
+                                                                                                                 ifelse(X%in%remote.sensing,"remote.sensing",X)))))}))
         data_reordered4$L1<-recode_factor(data_reordered4$L1,bio1_t="AirTemp",bio2_tdr="day_var_temp",sRadY="solar_rad",bulkSoilW="C_N",TotalP="Phosphorus",Quartz="Silicate",TiO2="Oxides",ThinSilt="granulo")
         reordering4<-with(data_reordered4,                       # Order boxes by median
                           reorder(L1,
@@ -305,7 +313,7 @@ for (PAAB in c("PA","AB")){
         data_reordered4$L1<-factor(data_reordered4$L1,
                                    levels = levels(reordering4))
 
-        data_reordered4$categ<-factor(data_reordered4$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+        data_reordered4$categ<-factor(data_reordered4$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         categinplot_VIMP<-unique(data_reordered4$categ)
         data_reordered4_10<-data_reordered4[data_reordered4$L1%in%levels(data_reordered4$L1)[1:10],]
         categinplot_VIMP_10<-unique(data_reordered4_10$categ)
@@ -326,7 +334,7 @@ for (PAAB in c("PA","AB")){
         
         allsel5_temp<-apply(allsel_BA2,1,function(X){c(any(X[names(X)%in%climatic]>=1),any(X[names(X)%in%edaphic]>=1),any(X[names(X)%in%landcover]>=1), any(X[names(X)=="ndmi"]>=1), any(X[names(X)%in%topographic]>=1))})
         allsel5_temp<-t(allsel5_temp)
-        colnames(allsel5_temp)<-c("climatic","edaphic","landcover","ndmi","topographic")
+        colnames(allsel5_temp)<-c("climatic","edaphic","landcover","remote.sensing","topographic")
         allsel5_temp<-apply(allsel5_temp,2,function(X){sum(X,na.rm=TRUE)/length(X)})
         Prop_models_one_cov[paste0(PAAB,"_",algo,"_BA"),]<-allsel5_temp
         allsel5_temp<-allsel5_temp[order(allsel5_temp,decreasing=TRUE)]
@@ -341,9 +349,10 @@ for (PAAB in c("PA","AB")){
         #     pgrouped_BA_GLM_PA          
         assign(paste0("pgrouped_BA_",algo,"_",PAAB),ggplot(allsel5, aes(x=grouping,y=value,fill=grouping))+ theme_bw() + 
                  geom_bar(stat='identity', show.legend = FALSE) + 
-                 xlab("") + ylab(ifelse(PAAB=="AB","","Bacteria")) + ylim(c(0,1)) +
-                 theme(axis.text.x=element_text(angle=90,vjust=0.5,hjust=1,size=5),plot.margin=unit(c(0,0,0,0),"pt"),
-                       panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+                 ylab(ifelse(PAAB=="AB","","Bacteria")) + ylim(c(0,1)) +
+                 theme(axis.text.x=element_text(angle=15,vjust=0.9,hjust=0.6,size=8),plot.margin=unit(c(0,5.5,0,5.5),"pt"),
+                       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       axis.title.x=element_blank()) +
         scale_fill_manual(values=rep("grey",length(allsel5$grouping))))
         #AR
         
@@ -358,8 +367,9 @@ for (PAAB in c("PA","AB")){
         allpresel3<-data.frame(value=allpresel2,variable=factor(names(allpresel2),levels=names(allpresel2)),categ=ifelse(names(allpresel2)%in%climatic,"climatic",
                                                                                                                          ifelse(names(allpresel2)%in%edaphic,"edaphic",
                                                                                                                                 ifelse(names(allpresel2)%in%topographic,"topographic",
-                                                                                                                                       ifelse(names(allpresel2)%in%landcover,"landcover",names(allpresel2))))))
-        allpresel3$categ<-factor(allpresel3$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+                                                                                                                                       ifelse(names(allpresel2)%in%landcover,"landcover",
+                                                                                                                                              ifelse(names(allpresel2)%in%remote.sensing,"remote.sensing",names(allpresel2)))))))
+        allpresel3$categ<-factor(allpresel3$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         
         # allsel3$variable<-as.character(allsel3$variable)
         # if(allsel3$variable[allsel3$variable=="Altitude"|allsel3$variable=="Elevation"]!=colnames(ENVdata)[colnames(ENVdata)=="Elevation"|colnames(ENVdata)=="Altitude"]){
@@ -400,8 +410,9 @@ for (PAAB in c("PA","AB")){
         allsel3<-data.frame(value=allsel2,variable=factor(names(allsel2),levels=names(allsel2)),categ=ifelse(names(allsel2)%in%climatic,"climatic",
                                                                                                              ifelse(names(allsel2)%in%edaphic,"edaphic",
                                                                                                                     ifelse(names(allsel2)%in%topographic,"topographic",
-                                                                                                                           ifelse(names(allsel2)%in%landcover,"landcover",names(allsel2))))))
-        allsel3$categ<-factor(allsel3$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+                                                                                                                           ifelse(names(allsel2)%in%landcover,"landcover",
+                                                                                                                                  ifelse(names(allsel2)%in%remote.sensing,"remote.sensing",names(allsel2)))))))
+        allsel3$categ<-factor(allsel3$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         # allsel3$variable<-as.character(allsel3$variable)
         # if(allsel3$variable[allsel3$variable=="Altitude"|allsel3$variable=="Elevation"]!=colnames(ENVdata)[colnames(ENVdata)=="Elevation"|colnames(ENVdata)=="Altitude"]){
         #   allsel3$variable[which(allsel3$variable=="Altitude"|allsel3$variable=="Elevation")]<-colnames(ENVdata)[colnames(ENVdata)=="Elevation"|colnames(ENVdata)=="Altitude"]
@@ -439,6 +450,7 @@ for (PAAB in c("PA","AB")){
                  ggtitle(ifelse(PAAB=="AB","Rel. Abundance models","Presence-Absence models"))+
                  scale_fill_manual(values=col_table$color[col_table$categ%in%categinplot_allsel3_10])+
                  scale_y_continuous(limits=c(0,1)))
+        # pSel10_AR_GLM_PA
         #pH 83% of archaea models
         
         # #list of ranks obtained per variable
@@ -514,7 +526,8 @@ for (PAAB in c("PA","AB")){
         data_reordered4$categ<-unlist(lapply(as.vector(data_reordered4$L1),function(X){ifelse(X%in%climatic,"climatic",
                                                                                               ifelse(X%in%edaphic,"edaphic",
                                                                                                      ifelse(X%in%topographic,"topographic",
-                                                                                                                   ifelse(X%in%landcover,"landcover",X))))}))
+                                                                                                                   ifelse(X%in%landcover,"landcover",
+                                                                                                                          ifelse(X%in%remote.sensing,"remote.sensing",X)))))}))
         data_reordered4$L1<-recode_factor(data_reordered4$L1,bio1_t="AirTemp",bio2_tdr="day_var_temp",sRadY="solar_rad",bulkSoilW="C_N",TotalP="Phosphorus",Quartz="Silicate",TiO2="Oxides",ThinSilt="granulo")
         reordering4<-with(data_reordered4,                       # Order boxes by median
                           reorder(L1,
@@ -522,7 +535,7 @@ for (PAAB in c("PA","AB")){
                                   median,decreasing=TRUE))
         data_reordered4$L1<-factor(data_reordered4$L1,
                                    levels = levels(reordering4))
-        data_reordered4$categ<-factor(data_reordered4$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+        data_reordered4$categ<-factor(data_reordered4$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         
         categinplot_VIMP<-unique(data_reordered4$categ)
         data_reordered4_10<-data_reordered4[data_reordered4$L1%in%levels(data_reordered4$L1)[1:10],]
@@ -543,10 +556,10 @@ for (PAAB in c("PA","AB")){
                  ggtitle(ifelse(PAAB=="AB","Rel. Abundance models","Presence-Absence models"))+
                  scale_fill_manual(values=col_table$color[col_table$categ%in%categinplot_VIMP_10])+
                  scale_y_continuous(limits=c(0,1)))
-      #pVIMP_AR_GLM_AB
-        allsel5_temp<-apply(allsel_AR2,1,function(X){c(any(X[names(X)%in%climatic]>=1),any(X[names(X)%in%edaphic]>=1),any(X[names(X)%in%landcover]>=1), any(X[names(X)=="ndmi"]>=1), any(X[names(X)%in%topographic]>=1))})
+      #pVIMP_AR_GLM_PA
+        allsel5_temp<-apply(allsel_AR2,1,function(X){c(any(X[names(X)%in%climatic]>=1),any(X[names(X)%in%edaphic]>=1),any(X[names(X)%in%landcover]>=1),any(X[names(X)%in%remote.sensing]>=1), any(X[names(X)%in%topographic]>=1))})
         allsel5_temp<-t(allsel5_temp)
-        colnames(allsel5_temp)<-c("climatic","edaphic","landcover","ndmi","topographic")
+        colnames(allsel5_temp)<-c("climatic","edaphic","landcover","remote.sensing","topographic")
         allsel5_temp<-apply(allsel5_temp,2,function(X){sum(X,na.rm=TRUE)/length(X)})
         Prop_models_one_cov[paste0(PAAB,"_",algo,"_AR"),]<-allsel5_temp
         allsel5_temp<-allsel5_temp[order(allsel5_temp,decreasing=TRUE)]
@@ -562,11 +575,13 @@ for (PAAB in c("PA","AB")){
         #     pgrouped_AR_GLM_PA      
         assign(paste0("pgrouped_AR_",algo,"_",PAAB),ggplot(allsel5, aes(x=grouping,y=value,fill=grouping))+theme_bw() + 
                  geom_bar(stat='identity', show.legend = FALSE) + 
-                 xlab("") + ylab(ifelse(PAAB=="AB","","Archaea"))  + ylim(c(0,1))+
-                 theme(axis.text.x=element_text(angle=90,vjust=0.5,hjust=1,size=5),plot.margin=unit(c(0,0,0,0),"pt"),
-                       panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+                 ylab(ifelse(PAAB=="AB","","Archaea"))  + ylim(c(0,1))+
+                 theme(axis.text.x=element_text(angle=15,vjust=0.9,hjust=0.6,size=8),plot.margin=unit(c(0,5.5,0,5.5),"pt"),
+                       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       axis.title.x=element_blank()) +
                  ggtitle(ifelse(PAAB=="AB","Rel. Abundance models","Presence-Absence models"))+
         scale_fill_manual(values=rep("grey",length(allsel5$grouping))))
+        # pgrouped_AR_GLM_PA
         #variable importance corrected by model performance (attribute the full performance to all variables according to their importance)
           # if(PAAB=="PA"){
           #   #variable importance corrected by model performance (attribute the full performance to all variables according to their importance)
@@ -636,8 +651,9 @@ for (PAAB in c("PA","AB")){
         allpresel3<-data.frame(value=allpresel2,variable=factor(names(allpresel2),levels=names(allpresel2)),categ=ifelse(names(allpresel2)%in%climatic,"climatic",
                                                                                                                          ifelse(names(allpresel2)%in%edaphic,"edaphic",
                                                                                                                                 ifelse(names(allpresel2)%in%topographic,"topographic",
-                                                                                                                                       ifelse(names(allpresel2)%in%landcover,"landcover",names(allpresel2))))))
-        allpresel3$categ<-factor(allpresel3$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+                                                                                                                                       ifelse(names(allpresel2)%in%landcover,"landcover",
+                                                                                                                                              ifelse(names(allpresel2)%in%remote.sensing,"remote.sensing",names(allpresel2)))))))
+        allpresel3$categ<-factor(allpresel3$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         # allsel3$variable<-as.character(allsel3$variable)
         # if(allsel3$variable[allsel3$variable=="Altitude"|allsel3$variable=="Elevation"]!=colnames(ENVdata)[colnames(ENVdata)=="Elevation"|colnames(ENVdata)=="Altitude"]){
         #   allsel3$variable[which(allsel3$variable=="Altitude"|allsel3$variable=="Elevation")]<-colnames(ENVdata)[colnames(ENVdata)=="Elevation"|colnames(ENVdata)=="Altitude"]
@@ -678,8 +694,9 @@ for (PAAB in c("PA","AB")){
         allsel3<-data.frame(value=allsel2,variable=factor(names(allsel2),levels=names(allsel2)),categ=ifelse(names(allsel2)%in%climatic,"climatic",
                                                                                                              ifelse(names(allsel2)%in%edaphic,"edaphic",
                                                                                                                     ifelse(names(allsel2)%in%topographic,"topographic",
-                                                                                                                           ifelse(names(allsel2)%in%landcover,"landcover",names(allsel2))))))
-        allsel3$categ<-factor(allsel3$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+                                                                                                                           ifelse(names(allsel2)%in%landcover,"landcover",
+                                                                                                                                  ifelse(names(allsel2)%in%remote.sensing,"remote.sensing",names(allsel2)))))))
+        allsel3$categ<-factor(allsel3$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         # categ<-vector()
         # for( i in 1:length(allsel3$variable)){
         #   vartest<-allsel3$variable[i]
@@ -782,7 +799,8 @@ for (PAAB in c("PA","AB")){
         data_reordered4$categ<-unlist(lapply(as.vector(data_reordered4$L1),function(X){ifelse(X%in%climatic,"climatic",
                                                                                               ifelse(X%in%edaphic,"edaphic",
                                                                                                      ifelse(X%in%topographic,"topographic",
-                                                                                                                   ifelse(X%in%landcover,"landcover",X))))}))
+                                                                                                                   ifelse(X%in%landcover,"landcover",
+                                                                                                                          ifelse(X%in%remote.sensing,"remote.sensing",X)))))}))
         data_reordered4$L1<-recode_factor(data_reordered4$L1,bio1_t="AirTemp",bio2_tdr="day_var_temp",sRadY="solar_rad",bulkSoilW="C_N",TotalP="Phosphorus",Quartz="Silicate",TiO2="Oxides",ThinSilt="granulo")
         reordering4<-with(data_reordered4,                       # Order boxes by median
                           reorder(L1,
@@ -791,7 +809,7 @@ for (PAAB in c("PA","AB")){
         data_reordered4$L1<-factor(data_reordered4$L1,
                                    levels = levels(reordering4))
         
-        data_reordered4$categ<-factor(data_reordered4$categ,levels=c("climatic","edaphic","landcover","ndmi","topographic"))
+        data_reordered4$categ<-factor(data_reordered4$categ,levels=c("climatic","edaphic","landcover","remote.sensing","topographic"))
         categinplot_VIMP<-unique(data_reordered4$categ)
         data_reordered4_10<-data_reordered4[data_reordered4$L1%in%levels(data_reordered4$L1)[1:10],]
         categinplot_VIMP_10<-unique(data_reordered4_10$categ)
@@ -813,9 +831,9 @@ for (PAAB in c("PA","AB")){
         #pVIMP10_FU_GLM_PA
         
         #% of models selecting a variable from each group
-        allsel5_temp<-apply(allsel_group,1,function(X){c(any(X[names(X)%in%climatic]>=1),any(X[names(X)%in%edaphic]>=1),any(X[names(X)%in%landcover]>=1), any(X[names(X)=="ndmi"]>=1), any(X[names(X)%in%topographic]>=1))})
+        allsel5_temp<-apply(allsel_group,1,function(X){c(any(X[names(X)%in%climatic]>=1),any(X[names(X)%in%edaphic]>=1),any(X[names(X)%in%landcover]>=1),any(X[names(X)%in%remote.sensing]>=1), any(X[names(X)%in%topographic]>=1))})
         allsel5_temp<-t(allsel5_temp)
-        colnames(allsel5_temp)<-c("climatic","edaphic","landcover","ndmi","topographic")
+        colnames(allsel5_temp)<-c("climatic","edaphic","landcover","remote.sensing","topographic")
         allsel5_temp<-apply(allsel5_temp,2,function(X){sum(X,na.rm=TRUE)/length(X)})
         Prop_models_one_cov[paste0(PAAB,"_",algo,"_",GtoM),]<-allsel5_temp
         allsel5_temp<-allsel5_temp[order(allsel5_temp,decreasing=TRUE)]
@@ -830,10 +848,13 @@ for (PAAB in c("PA","AB")){
         # #     pgrouped_FU_GLM_PA    
         assign(paste0("pgrouped_",GtoM,"_",algo,"_",PAAB),ggplot(allsel5, aes(x=grouping,y=value,fill=grouping)) + theme_bw() + 
                  geom_bar(stat='identity', show.legend = FALSE) + 
-                 xlab("") + ylab(ifelse(PAAB=="AB","",ifelse(GtoM=="FU","Fungi","Protist"))) + ylim(c(0,1))+
-                 theme(axis.text.x=element_text(angle=90,vjust=0.5,hjust=1,size=5),plot.margin=unit(c(0,0,0,0),"pt"),
-                       panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+                  ylab(ifelse(PAAB=="AB","",ifelse(GtoM=="FU","Fungi","Protist"))) + ylim(c(0,1))+
+                 theme(axis.text.x=element_text(angle=15,vjust=0.9,hjust=0.6,size=8),plot.margin=unit(c(0,5.5,0,5.5),"pt"),
+                       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       axis.title.x=element_blank()) +
                  scale_fill_manual(values=rep("grey",length(allsel5$grouping))))
+        # pgrouped_FU_GLM_PA
+        # pgrouped_BA_RF_AB
         #variable importance corrected by model performance (attribute the full performance to all variables according to their importance)
         # if(PAAB=="PA"){
         #   load(paste0(PAAB,"/",GtoM,"/data/",algo,"/Eval.Rda"))

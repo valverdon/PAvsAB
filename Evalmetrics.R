@@ -233,7 +233,7 @@ Evalmetrics <- function(obs, pred,PAAB){ #obs=OTUdata[rownames(OTUdata)%in%names
     MAEs <- MAE/mean(obs) #Waldock 2021, divide by mean to "scale" the value and have something that can be compared between models 
     #"prediction within x% of observed value"
     RMSE <- sqrt(sum((obs - pred)^2)/length(obs))
-    RMSEs <- RMSE/mean(obs) #=coef of variation of Root Mean Square Error CV(RMSE)
+    RMSEs <- RMSE/mean(obs) #=coef of variation 
     
     # discrimination
     Dspear <- cor(obs,pred, method="spearman")

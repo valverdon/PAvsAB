@@ -336,8 +336,9 @@ for (PAAB in c("PA","AB")){
         assign(paste0("pgrouped_BA_",algo,"_",PAAB),ggplot(allsel5, aes(x=grouping,y=value,fill=grouping))+ theme_bw() + 
                  geom_bar(stat='identity', show.legend = FALSE) + 
                  xlab("") + ylab(ifelse(PAAB=="AB","","Bacteria")) + ylim(c(0,1)) +
-                 theme(axis.text.x=element_text(angle=90,vjust=0.5,hjust=1,size=5),plot.margin=unit(c(0,0,0,0),"pt"),
-                       panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+                 theme(axis.text.x=element_text(angle=60,vjust=1,hjust=1,size=10),plot.margin=unit(c(0,0,0,0),"pt"),
+                       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       ) +
                  scale_fill_manual(values=col_table$color[order(match(col_table$categ,levels(allsel5$grouping)))]))
         #     pgrouped_BA_GLM_PA          
 
@@ -551,7 +552,7 @@ for (PAAB in c("PA","AB")){
         assign(paste0("pgrouped_AR_",algo,"_",PAAB),ggplot(allsel5, aes(x=grouping,y=value,fill=grouping))+theme_bw() + 
                  geom_bar(stat='identity', show.legend = FALSE) + 
                  xlab("") + ylab(ifelse(PAAB=="AB","","Archaea"))  + ylim(c(0,1))+
-                 theme(axis.text.x=element_text(angle=90,vjust=0.5,hjust=1,size=5),plot.margin=unit(c(0,0,0,0),"pt"),
+                 theme(axis.text.x=element_text(angle=60,vjust=1,hjust=1,size=10),plot.margin=unit(c(0,0,0,0),"pt"),
                        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
                  ggtitle(ifelse(PAAB=="AB","Rel. Abundance models","Presence-Absence models"))+
                  scale_fill_manual(values=col_table$color[order(match(col_table$categ,levels(allsel5$grouping)))]))
